@@ -6,7 +6,6 @@
 -- assumptions:
 --	file xxx.lua contains module xxx
 --	'/' is the directory separator (could have used package.config)
---	int and size_t take 4 bytes (could have read sizes from header)
 --	does not honor package.path
 --
 -- Luiz Henrique de Figueiredo <lhf@tecgraf.puc-rio.br>
@@ -22,6 +21,11 @@ NAME="=("..NAME..")"
 local n=#arg
 local m=n
 local b
+local a64=false
+
+local f=assert(io.popen("uname -m"))
+local s=f:read("*a")
+if string.find(s,"64") then a64=true end
 
 for i=1,n do
 	if arg[i]=="-L" then m=i-1 break end
@@ -48,7 +52,11 @@ end
 
 b=string.dump(assert(loadstring(b,NAME)))
 local x,y=string.find(b,MARK)
-b=string.sub(b,1,x-6).."\0"..string.sub(b,y+2,y+5)
+if a64 then
+	b=string.sub(b,1,x-6-4).."\0"..string.sub(b,y+2,y+5)
+else
+	b=string.sub(b,1,x-6).."\0"..string.sub(b,y+2,y+5)
+end
 
 f=assert(io.open(OUTPUT,"wb"))
 assert(f:write(b))
@@ -58,5 +66,9 @@ end
 for i=1,m do
 	assert(f:write(arg[i]))
 end
-assert(f:write(string.rep("\0",12)))
+if a64 then
+	assert(f:write(string.rep("\0",3*8)))
+else
+	assert(f:write(string.rep("\0",12)))
+end
 assert(f:close())
