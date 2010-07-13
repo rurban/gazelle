@@ -1,5 +1,5 @@
 DESTDIR ?=
-PREFIX ?= /usr
+PREFIX ?= /usr/local
 BINDIR := $(DESTDIR)$(PREFIX)/bin
 LIBDIR := $(DESTDIR)$(PREFIX)/lib
 INCDIR := $(DESTDIR)$(PREFIX)/include
