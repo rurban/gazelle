@@ -60,6 +60,8 @@ runtime/libgazelle.a(%.o): %.o
 runtime/libgazelle.a: runtime/libgazelle.a($(RTOBJ))
 	ranlib $@
 
+utilities/luac.lua: utilities/test64bit
+
 utilities/bitcode_dump: utilities/bitcode_dump.o $(RTOBJ)
 
 utilities/gzlparse: utilities/gzlparse.o $(RTOBJ)
@@ -99,6 +101,7 @@ clean:
 	$(RM) $(PROG)
 	$(RM) $(UTIL)
 	$(RM) $(LIB)
+	$(RM) utilities/test64bit
 	$(RM) luac.out
 	$(RM) -r docs/images
 	$(RM) docs/manual.html

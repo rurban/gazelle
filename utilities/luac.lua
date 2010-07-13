@@ -21,11 +21,19 @@ NAME="=("..NAME..")"
 local n=#arg
 local m=n
 local b
+local test64bit
 local a64=false
 
-local f=assert(io.popen("uname -m"))
-local s=f:read("*a")
-if string.find(s,"64") then a64=true end
+if io.open("./test64bit") then
+  test64bit="./test64bit"
+elseif io.open("./utilities/test64bit") then
+  test64bit="./utilities/test64bit"
+end
+if assert(test64bit) then
+  local f=assert(io.popen(test64bit))
+  local s=f:read("*a")
+  if string.find(s,"64") then a64=true end
+end
 
 for i=1,n do
 	if arg[i]=="-L" then m=i-1 break end
