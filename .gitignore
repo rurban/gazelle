@@ -13,3 +13,4 @@ utilities/bitcode_dump
 utilities/gzlparse
 utilities/srlua
 utilities/srlua-glue
+utilities/test64bit

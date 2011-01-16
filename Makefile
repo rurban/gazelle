@@ -8,9 +8,17 @@ IMGDIR := /usr/share/asciidoc/images
 
 CFLAGS += -std=c99
 CPPFLAGS := -Iruntime/include
+LDFLAGS := -llua
+
 ifeq ($(shell uname), Darwin)
+  ifeq "$(wildcard /opt/local)" "/opt/local"
+    CPPFLAGS += -I/opt/local/include
+    LDFLAGS += -L/opt/local/lib
+  endif
   CPPFLAGS += -I/usr/include/lua5.1
-  LDFLAGS := -L/usr/local/lib -llua
+  LDFLAGS += -L/usr/local/lib
+  # needed for building the lua ext
+  LDFLAGS += -undefined dynamic_lookup
 else
   CFLAGS += $(strip $(shell pkg-config --silence-errors --cflags lua || pkg-config --cflags lua5.1))
   LDFLAGS := $(strip $(shell pkg-config --silence-errors --libs lua || pkg-config --libs lua5.1))
