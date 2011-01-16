@@ -44,13 +44,13 @@ void dump_stack(struct gzl_parse_state *s, FILE *output)
 
             case GZL_FRAME_TYPE_GLA: {
                 struct gzl_gla_frame *gla_frame = &frame->f.gla_frame;
-                fprintf(output, "GLA: #%d, ", gla_frame->gla - g->glas);
+                fprintf(output, "GLA: #%zd, ", gla_frame->gla - g->glas);
                 break;
             }
 
             case GZL_FRAME_TYPE_INTFA: {
                 struct gzl_intfa_frame *intfa_frame = &frame->f.intfa_frame;
-                fprintf(output, "IntFA: #%d, ", intfa_frame->intfa - g->intfas);
+                fprintf(output, "IntFA: #%zd, ", intfa_frame->intfa - g->intfas);
                 break;
             }
         }
@@ -566,7 +566,8 @@ enum gzl_status do_intfa_transition(struct gzl_parse_state *s,
  * header file.
  */
 
-enum gzl_status gzl_parse(struct gzl_parse_state *s, char *buf, size_t buf_len)
+enum gzl_status gzl_parse(struct gzl_parse_state *s, const char *buf,
+                          size_t buf_len)
 {
     enum gzl_status status = GZL_STATUS_OK;
 

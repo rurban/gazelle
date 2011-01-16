@@ -227,7 +227,8 @@ enum gzl_status {
   GZL_STATUS_IO_ERROR,             /* Error reading the file, check errno. */
   GZL_STATUS_PREMATURE_EOF_ERROR,  /* File hit EOF but the grammar wasn't EOF */
 };
-enum gzl_status gzl_parse(struct gzl_parse_state *state, char *buf, size_t buf_len);
+enum gzl_status gzl_parse(struct gzl_parse_state *state, const char *buf,
+                          size_t buf_len);
 
 /* Call this function to complete the parse.  This primarily involves
  * calling all the final callbacks.  Will return false if the parse
