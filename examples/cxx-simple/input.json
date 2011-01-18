@@ -1,0 +1,4 @@
+{ "foo": "bar", "a list": [123, "four", 5.6],
+
+
+"another object": {"first":"1st", "second":"2nd"} }
