@@ -29,13 +29,20 @@ export LUA_PATH := $(CURDIR)/compiler/?.lua;$(CURDIR)/sketches/?.lua;$(CURDIR)/t
 export LUA_CPATH := $(CURDIR)/lang_ext/lua/?.so
 
 RTSRC := $(wildcard runtime/*.c)
+RTCXXSRC := $(wildcard runtime/*.cc)
 RTOBJ := $(RTSRC:.c=.o)
+RTOBJ += $(RTCXXSRC:.cc=.o)
+
 EXTSRC := $(wildcard lang_ext/lua/*.c)
 EXTOBJ := $(EXTSRC:.c=.o)
+
 LUASRC := $(wildcard compiler/*.lua) $(wildcard compiler/bootstrap/*.lua)
-SRC := $(RTSRC) $(EXTSRC) $(wildcard utilities/*.c)
+
+SRC := $(RTSRC) $(RTCXXSRC) $(EXTSRC) $(wildcard utilities/*.c)
 OBJ := $(SRC:.c=.o)
+OBJ += $(SRC:.cc=.o)
 DEP := $(SRC:.c=.d)
+DEP += $(SRC:.cc=.d)
 UTIL := utilities/bitcode_dump utilities/srlua utilities/srlua-glue
 PROG := gzlc utilities/gzlparse
 LUALIB := lang_ext/lua/bc_read_stream.so lang_ext/lua/gazelle.so
@@ -47,6 +54,9 @@ IMG := $(foreach img,$(wildcard $(IMGDIR)/*.png),docs/images/$(notdir $(img)))
 
 %.d: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -MM -MT $(patsubst %.c,%.o,$<) -o $@ $^
+
+%.d: %.cc
+	$(CXX) $(CFLAGS) $(CPPFLAGS) -MM -MT $(patsubst %.c,%.o,$<) -o $@ $^
 
 %.so: %.o
 	$(CC) $(LDFLAGS) -shared -o $@ $^
