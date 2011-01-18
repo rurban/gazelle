@@ -71,25 +71,28 @@ struct gzl_parse_val
     } val;
 };
 
+/* Stack frame types */
+struct gzl_rtn_frame {
+  struct gzl_rtn            *rtn;
+  struct gzl_rtn_state      *rtn_state;
+  struct gzl_rtn_transition *rtn_transition;
+};
+struct gzl_gla_frame {
+  struct gzl_gla            *gla;
+  struct gzl_gla_state      *gla_state;
+};
+struct gzl_intfa_frame {
+  struct gzl_intfa          *intfa;
+  struct gzl_intfa_state    *intfa_state;
+};
+
 /* This structure is the format for every stack frame of the parse stack. */
 struct gzl_parse_stack_frame
 {
     union {
-      struct gzl_rtn_frame {
-        struct gzl_rtn            *rtn;
-        struct gzl_rtn_state      *rtn_state;
-        struct gzl_rtn_transition *rtn_transition;
-      } rtn_frame;
-
-      struct gzl_gla_frame {
-        struct gzl_gla            *gla;
-        struct gzl_gla_state      *gla_state;
-      } gla_frame;
-
-      struct gzl_intfa_frame {
-        struct gzl_intfa          *intfa;
-        struct gzl_intfa_state    *intfa_state;
-      } intfa_frame;
+      struct gzl_rtn_frame rtn_frame;
+      struct gzl_gla_frame gla_frame;
+      struct gzl_intfa_frame intfa_frame;
     } f;
 
     struct gzl_offset start_offset;
