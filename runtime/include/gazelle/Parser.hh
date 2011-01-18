@@ -27,27 +27,33 @@ class Parser {
   // Creates a new parser optionally bound to a grammar
   Parser(Grammar *grammar=NULL);
   virtual ~Parser();
-  
+
   // Set the grammar which should be used for the next call to parse
-  virtual void setGrammar(Grammar *grammar);
-  
+  void setGrammar(Grammar *grammar);
+
   // A structure which contains the current state (see parse.h for details)
   inline gzl_parse_state *state() { return state_; }
-  
-  // Parse a chunk of text. Note that the text need to begin with a valid token
-  virtual gzl_status parse(const char *source, size_t len=0);
-  
+
+  // Parse a chunk of text. Note that the text need to begin with a valid token.
+  // If |finalize| is true, finalizeParsing is called after successfully parsing
+  // |source| (a convenience feature).
+  gzl_status parse(const char *source, size_t len=0, bool finalize=false);
+
+  // Complete the parsing. This primarily involves calling all the final
+  // callbacks. Returns false if the parse state does not allow EOF here.
+  bool finalizeParsing();
+
   // Convenience method to parse the complete |file|
-  virtual gzl_status parseFile(FILE *file);
+  gzl_status parseFile(FILE *file);
 
   // The top ("latest") frame in the stack
   inline gzl_parse_stack_frame *stackTop() {
     return DYNARRAY_GET_TOP(state_->parse_stack);
   }
-  
+
   // Current stack depth
   inline int stackDepth() { return state_->parse_stack_len; }
-  
+
   // Current source line number (starts at 1)
   inline size_t line() { return state_->offset.line; }
   // Current source column number (starts at 1)
@@ -75,9 +81,6 @@ class Parser {
 
   // The Gazelle parse state
   gzl_parse_state *state_;
-
-  // Configure a grammar binding to use our internal callbacks
-  static void initBoundGrammar(gzl_bound_grammar *bg);
 };
 
 
