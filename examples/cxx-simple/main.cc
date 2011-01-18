@@ -5,7 +5,7 @@ First, compile the grammar:
 gzlc json.gzl
 
 Then build this program:
-c++ -o main -I../../runtime/include -L../../runtime -lgazelle main.cc && ./main
+c++ -o main -I../../runtime/include -L../../runtime -lgazelle main.cc
 
 And run it:
 ./main
@@ -22,6 +22,7 @@ And run it:
 #include <gazelle/Parser.hh>
 #include <gazelle/Grammar.hh>
 
+// some local utilities used in this example
 #define DLOG(fmt, ...) fprintf(stderr, fmt "\n", ##__VA_ARGS__ );
 const char *statusstr(gzl_status status);
 inline static int mymin(int a, int b) { return (a < b) ? a : b; }
@@ -86,11 +87,13 @@ class MyParser : public gazelle::Parser {
   }
 };
 
-
+// our program entry
 int main(int argc, char *argv[]) {
   MyParser parser;
   gazelle::Grammar grammar;
-  if (!grammar.loadFile("./json.gzc"))
+
+  // load the grammar
+  if (!grammar.loadFile("json.gzc"))
     return 1;
   parser.setGrammar(&grammar);
 
@@ -99,8 +102,8 @@ int main(int argc, char *argv[]) {
   std::string source1;
   char buf[4097];
   while (!feof(f)) {
-    fread(buf, 1, 4096, f);
-    source1.append(buf);
+    size_t z = fread(buf, 1, 4096, f);
+    source1.append(buf, z);
   }
   fclose(f);
 

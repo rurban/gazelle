@@ -7,7 +7,7 @@
 using namespace gazelle;
 
 // Construct a new uninitialized grammar with optional name
-Grammar::Grammar(const char *name) {
+Grammar::Grammar(const char *name) : grammar_(NULL) {
   name_ = name ? strdup(name) : NULL;
 }
 
