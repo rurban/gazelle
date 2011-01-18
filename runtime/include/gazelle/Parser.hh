@@ -1,0 +1,85 @@
+#ifndef GAZELLE_CXX_PARSER_H_
+#define GAZELLE_CXX_PARSER_H_
+
+#include <gazelle/parse.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+namespace gazelle {
+class Grammar;
+
+/**
+ * A stateful Gazelle parser
+ *
+ * Example:
+ *
+ *    gazelle::Parser parser;
+ *    gazelle::Grammar grammar;
+ *    if (!grammar.loadFile("./json.gzc"))
+ *      exit(1);
+ *    parser.setGrammar(&grammar);
+ *    gzl_status status = parser.parse("the text to parse");
+ *
+ */
+class Parser {
+ public:
+  // Creates a new parser optionally bound to a grammar
+  Parser(Grammar *grammar=NULL);
+  virtual ~Parser();
+  
+  // Set the grammar which should be used for the next call to parse
+  virtual void setGrammar(Grammar *grammar);
+  
+  // A structure which contains the current state (see parse.h for details)
+  inline gzl_parse_state *state() { return state_; }
+  
+  // Parse a chunk of text. Note that the text need to begin with a valid token
+  virtual gzl_status parse(const char *source, size_t len=0);
+  
+  // Convenience method to parse the complete |file|
+  virtual gzl_status parseFile(FILE *file);
+
+  // The top ("latest") frame in the stack
+  inline gzl_parse_stack_frame *stackTop() {
+    return DYNARRAY_GET_TOP(state_->parse_stack);
+  }
+  
+  // Current stack depth
+  inline int stackDepth() { return state_->parse_stack_len; }
+  
+  // Current source line number (starts at 1)
+  inline size_t line() { return state_->offset.line; }
+  // Current source column number (starts at 1)
+  inline size_t column() { return state_->offset.column; }
+  // Current source byte offset
+  inline size_t offset() { return state_->offset.byte; }
+
+  // ---- parser events ----
+  // These methods are called during parsing by the parser machine
+
+  // Invoked when a rule starts
+  virtual void onStartRule(gzl_rtn_frame *frame, const char *name) {}
+
+  virtual void onEndRule(gzl_rtn_frame *frame, const char *name) {}
+
+  virtual void onTerminal(gzl_terminal *terminal) {}
+
+  virtual void onUnknownTransitionError(int ch) {}
+
+  virtual void onUnexpectedTerminalError(gzl_terminal *terminal) {}
+
+ protected:
+  // Grammar and callbacks struct needed for the Gazelle API
+  gzl_bound_grammar boundGrammar_;
+
+  // The Gazelle parse state
+  gzl_parse_state *state_;
+
+  // Configure a grammar binding to use our internal callbacks
+  static void initBoundGrammar(gzl_bound_grammar *bg);
+};
+
+
+}  // namespace gazelle
+#endif  // GAZELLE_CXX_PARSER_H_
