@@ -64,8 +64,6 @@ void Parser::setGrammar(Grammar *grammar) {
 
 // Parse a chunk of text. Note that the text need to begin with a valid token
 gzl_status Parser::parse(const char *source, size_t len, bool finalize) {
-  fprintf(stderr, "Parser::parse: source %p, state_ %p, grammar: %p \n",
-          source, state_, boundGrammar_.grammar);
   if (len == 0)
     len = strlen(source);
   gzl_status status = gzl_parse(state_, source, len);
