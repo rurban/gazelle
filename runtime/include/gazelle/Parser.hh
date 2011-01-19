@@ -46,9 +46,16 @@ class Parser {
   // Convenience method to parse the complete |file|
   gzl_status parseFile(FILE *file);
 
+  // Retrieve a stack frame |offset| levels down
+  inline gzl_parse_stack_frame *stackFrameAt(int offset) {
+    if (offset < 0 || offset >= state_->parse_stack_len)
+      return NULL;
+    return &(state_->parse_stack[(state_->parse_stack_len - 1) - offset]);
+  }
+
   // The top ("latest") frame in the stack
-  inline gzl_parse_stack_frame *stackTop() {
-    return DYNARRAY_GET_TOP(state_->parse_stack);
+  inline gzl_parse_stack_frame *currentStackFrame() {
+    return stackFrameAt(0);
   }
 
   // Current stack depth
