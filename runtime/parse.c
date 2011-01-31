@@ -572,8 +572,9 @@ enum gzl_status do_intfa_transition(struct gzl_parse_state *s,
 enum gzl_status gzl_parse(struct gzl_parse_state *s, const char *buf,
                           size_t buf_len)
 {
+    assert(s != NULL);
     enum gzl_status status = GZL_STATUS_OK;
-
+    int offset = 0;
     /* For the first call, we need to push the initial frame and
      * descend from the starting frame until we hit an IntFA frame. */
     if(s->offset.byte == 0 && s->parse_stack_len == 0) {
@@ -581,13 +582,22 @@ enum gzl_status gzl_parse(struct gzl_parse_state *s, const char *buf,
         bool entered_gla;
         status = descend_to_gla(s, &entered_gla, &s->offset);
         if(status == GZL_STATUS_OK) push_intfa_frame_for_gla_or_rtn(s);
+    } else {
+        offset = s->offset.byte;
+        //push_rtn_frame(s, &s->bound_grammar->grammar->rtns[0], &s->offset);
+        //printf("parse. (s->offset.byte => %zu)\n", s->offset.byte);
+        bool entered_gla;
+        status = descend_to_gla(s, &entered_gla, &s->offset);
+        printf("entered_gla: %d  (offset: %zu, s->offset.byte => %zu)\n",
+               entered_gla, offset, s->offset.byte);
+        if(status == GZL_STATUS_OK) push_intfa_frame_for_gla_or_rtn(s);
     }
     if(s->parse_stack_len == 0) {
         /* This gzl_parse_state has already hit hard EOF previously. */
         return GZL_STATUS_HARD_EOF;
     }
 
-    for(int i = 0; i < buf_len && status == GZL_STATUS_OK; i++)
+    for(int i = offset; i < buf_len && status == GZL_STATUS_OK; i++)
         status = do_intfa_transition(s, buf[i]);
     return status;
 }
