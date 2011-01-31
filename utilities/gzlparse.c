@@ -152,7 +152,7 @@ void start_rule_callback(struct gzl_parse_state *parse_state)
 
     print_newline(user_state, false);
     print_indent(user_state);
-    char *rule = get_json_escaped_string(rtn_frame->rtn->name, 0);
+    char *rule = get_json_escaped_string(rtn_frame->rtn->name, 0); 
     printf("{\"rule\":%s, \"start\": %zu, \"line\": %zu, \"column\": %zu, ",
            rule, frame->start_offset.byte,
            frame->start_offset.line, frame->start_offset.column);
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
     };
     if(dump_json) {
         bg.terminal_cb = terminal_callback;
-        bg.start_rule_cb = start_rule_callback;
+        bg.did_start_rule_cb = start_rule_callback;
         bg.end_rule_cb = end_rule_callback;
         fputs("{\"parse_tree\":", stdout);
     }
