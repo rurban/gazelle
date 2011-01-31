@@ -117,6 +117,9 @@ struct gzl_parse_stack_frame
 
 struct gzl_parse_state;
 typedef void (*gzl_rule_callback_t)(struct gzl_parse_state *state);
+typedef void (*gzl_will_rule_callback_t)(struct gzl_parse_state *state,
+                                         struct gzl_rtn *rtn,
+                                         struct gzl_offset *start_offset);
 typedef void (*gzl_terminal_callback_t)(struct gzl_parse_state *state,
                                         struct gzl_terminal *terminal);
 typedef void (*gzl_error_char_callback_t)(struct gzl_parse_state *state,
@@ -127,7 +130,8 @@ struct gzl_bound_grammar
 {
     struct gzl_grammar *grammar;
     gzl_terminal_callback_t terminal_cb;
-    gzl_rule_callback_t start_rule_cb;
+    gzl_will_rule_callback_t will_start_rule_cb;
+    gzl_rule_callback_t did_start_rule_cb;
     gzl_rule_callback_t end_rule_cb;
     gzl_error_char_callback_t error_char_cb;
     gzl_error_terminal_callback_t error_terminal_cb;

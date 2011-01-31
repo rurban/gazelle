@@ -107,13 +107,16 @@ enum gzl_status push_rtn_frame(struct gzl_parse_state *s,
                                struct gzl_rtn *rtn,
                                struct gzl_offset *start_offset)
 {
+    if(s->bound_grammar->will_start_rule_cb)
+        s->bound_grammar->will_start_rule_cb(s, rtn, start_offset);
     struct gzl_parse_stack_frame *new_frame =
         push_empty_frame(s, GZL_FRAME_TYPE_RTN, start_offset);
     struct gzl_rtn_frame *new_rtn_frame = &new_frame->f.rtn_frame;
     new_rtn_frame->rtn            = rtn;
     new_rtn_frame->rtn_transition = NULL;
     new_rtn_frame->rtn_state      = &new_rtn_frame->rtn->states[0];
-    if(s->bound_grammar->start_rule_cb) s->bound_grammar->start_rule_cb(s);
+    if(s->bound_grammar->did_start_rule_cb)
+        s->bound_grammar->did_start_rule_cb(s);
     return GZL_STATUS_OK;
 }
 
