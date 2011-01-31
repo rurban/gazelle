@@ -1,5 +1,7 @@
 
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 #define DEFINE_DYNARRAY(name, type) \
   type *name; \

@@ -7,8 +7,8 @@ INCDIR := $(DESTDIR)$(PREFIX)/include
 IMGDIR := /usr/share/asciidoc/images
 
 CFLAGS += -std=c99
-CPPFLAGS := -Iruntime/include
-LDFLAGS := -llua
+CPPFLAGS += -Iruntime/include
+LDFLAGS += -llua
 
 ifeq ($(shell uname), Darwin)
   ifeq "$(wildcard /opt/local)" "/opt/local"
@@ -38,11 +38,12 @@ EXTOBJ := $(EXTSRC:.c=.o)
 
 LUASRC := $(wildcard compiler/*.lua) $(wildcard compiler/bootstrap/*.lua)
 
-SRC := $(RTSRC) $(RTCXXSRC) $(EXTSRC) $(wildcard utilities/*.c)
+SRC := $(RTSRC) $(EXTSRC) $(wildcard utilities/*.c)
 OBJ := $(SRC:.c=.o)
-OBJ += $(SRC:.cc=.o)
+OBJ += $(RTCXXSRC:.cc=.o)
 DEP := $(SRC:.c=.d)
-DEP += $(SRC:.cc=.d)
+SRC += $(RTCXXSRC)
+DEP += $(RTCXXSRC:.cc=.d)
 UTIL := utilities/bitcode_dump utilities/srlua utilities/srlua-glue
 PROG := gzlc utilities/gzlparse
 LUALIB := lang_ext/lua/bc_read_stream.so lang_ext/lua/gazelle.so

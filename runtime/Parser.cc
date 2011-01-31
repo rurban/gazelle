@@ -42,17 +42,6 @@ static void error_terminal_callback(struct gzl_parse_state *state,
 
 
 Parser::Parser(Grammar *grammar) {
-  state_ = gzl_alloc_parse_state();
-  assert(state_ != NULL);
-  state_->user_data = (void*)this;
-  // setup bound grammar
-  boundGrammar_.terminal_cb = terminal_callback;
-  boundGrammar_.will_start_rule_cb = will_start_rule_callback;
-  boundGrammar_.did_start_rule_cb = did_start_rule_callback;
-  boundGrammar_.end_rule_cb = end_rule_callback;
-  boundGrammar_.error_char_cb = error_unknown_trans_callback;
-  boundGrammar_.error_terminal_cb = error_terminal_callback;
-  gzl_init_parse_state(state_, &boundGrammar_);
   setGrammar(grammar);
 }
 
@@ -64,6 +53,17 @@ Parser::~Parser() {
   
 
 void Parser::setGrammar(Grammar *grammar) {
+  state_ = gzl_alloc_parse_state();
+  assert(state_ != NULL);
+  state_->user_data = (void*)this;
+  // setup bound grammar
+  boundGrammar_.terminal_cb = terminal_callback;
+  boundGrammar_.will_start_rule_cb = will_start_rule_callback;
+  boundGrammar_.did_start_rule_cb = did_start_rule_callback;
+  boundGrammar_.end_rule_cb = end_rule_callback;
+  boundGrammar_.error_char_cb = error_unknown_trans_callback;
+  boundGrammar_.error_terminal_cb = error_terminal_callback;
+  gzl_init_parse_state(state_, &boundGrammar_);
   boundGrammar_.grammar = grammar ? grammar->grammar() : NULL;
 }
 

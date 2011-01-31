@@ -514,7 +514,7 @@ enum gzl_status do_intfa_transition(struct gzl_parse_state *s,
      * coming from is *not* final, it's just a parse error. */
     if(!t) {
         char *terminal = intfa_frame->intfa_state->final;
-        assert(terminal);  /* TODO: handle this case. */
+        assert(terminal); /* TODO: handle this case. */
         status = process_terminal(s, terminal, &frame->start_offset,
                                   s->offset.byte - frame->start_offset.byte);
         if(status != GZL_STATUS_OK) return status;
@@ -624,7 +624,7 @@ bool gzl_finish_parse(struct gzl_parse_state *s)
             /* Pop the frame like it never happened. */
             pop_intfa_frame(s);
         } else {
-            /* IntFA is in neither a start nor a final state. 
+            /* IntFA is in neither a start nor a final state.
              * This cannot be EOF. */
             return false;
         }
