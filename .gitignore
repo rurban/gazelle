@@ -4,7 +4,9 @@
 *.so
 *.a
 *.gzc
+*.dSYM
 gzlc
+gzlc-*
 lua_path
 luac.out
 docs/*.png
