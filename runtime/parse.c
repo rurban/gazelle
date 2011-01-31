@@ -588,8 +588,8 @@ enum gzl_status gzl_parse(struct gzl_parse_state *s, const char *buf,
         //printf("parse. (s->offset.byte => %zu)\n", s->offset.byte);
         bool entered_gla;
         status = descend_to_gla(s, &entered_gla, &s->offset);
-        printf("entered_gla: %d  (offset: %zu, s->offset.byte => %zu)\n",
-               entered_gla, offset, s->offset.byte);
+        //printf("entered_gla: %d  (offset: %zu, s->offset.byte => %zu)\n",
+        //       entered_gla, offset, s->offset.byte);
         if(status == GZL_STATUS_OK) push_intfa_frame_for_gla_or_rtn(s);
     }
     if(s->parse_stack_len == 0) {
