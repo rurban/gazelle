@@ -33,6 +33,15 @@ class Parser {
 
   // A structure which contains the current state (see parse.h for details)
   inline gzl_parse_state *state() { return state_; }
+  inline void setState(gzl_parse_state *state) {
+    if (state_) gzl_free_parse_state(state_);
+    state_ = state;
+  }
+  inline gzl_parse_state *swapState(gzl_parse_state *state) {
+    gzl_parse_state *prevState = state_;
+    state_ = state;
+    return prevState;
+  }
 
   // Parse a chunk of text. Note that the text need to begin with a valid token.
   // If |finalize| is true, finalizeParsing is called after successfully parsing
@@ -72,7 +81,10 @@ class Parser {
   // These methods are called during parsing by the parser machine
 
   // Invoked when a rule starts
-  virtual void onStartRule(gzl_rtn_frame *frame, const char *name) {}
+  virtual void onWillStartRule(gzl_rtn *frame,
+                               const char *name,
+                               gzl_offset *offset) {}
+  virtual void onDidStartRule(gzl_rtn_frame *frame, const char *name) {}
 
   virtual void onEndRule(gzl_rtn_frame *frame, const char *name) {}
 

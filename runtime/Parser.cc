@@ -6,12 +6,17 @@
 
 using namespace gazelle;
 
+static void will_start_rule_callback(struct gzl_parse_state *state,
+                                     struct gzl_rtn *rtn,
+                                     struct gzl_offset *start_offset) {
+  ((Parser*)state->user_data)->onWillStartRule(rtn, rtn->name, start_offset);
+}
 
-static void start_rule_callback(struct gzl_parse_state *state) {
+static void did_start_rule_callback(struct gzl_parse_state *state) {
   gzl_parse_stack_frame *frame = DYNARRAY_GET_TOP(state->parse_stack);
   assert(frame->frame_type == gzl_parse_stack_frame::GZL_FRAME_TYPE_RTN);
   gzl_rtn_frame *rtn_frame = &frame->f.rtn_frame;
-  ((Parser*)state->user_data)->onStartRule(rtn_frame, rtn_frame->rtn->name);
+  ((Parser*)state->user_data)->onDidStartRule(rtn_frame, rtn_frame->rtn->name);
 }
 
 static void end_rule_callback(struct gzl_parse_state *state) {
@@ -42,7 +47,8 @@ Parser::Parser(Grammar *grammar) {
   state_->user_data = (void*)this;
   // setup bound grammar
   boundGrammar_.terminal_cb = terminal_callback;
-  boundGrammar_.start_rule_cb = start_rule_callback;
+  boundGrammar_.will_start_rule_cb = will_start_rule_callback;
+  boundGrammar_.did_start_rule_cb = did_start_rule_callback;
   boundGrammar_.end_rule_cb = end_rule_callback;
   boundGrammar_.error_char_cb = error_unknown_trans_callback;
   boundGrammar_.error_terminal_cb = error_terminal_callback;
