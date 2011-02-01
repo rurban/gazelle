@@ -531,12 +531,14 @@ struct gzl_grammar *gzl_load_grammar(struct bc_read_stream *s)
             else
             {
                 /* Success -- we finished loading! */
+                return g;
                 break;
             }
         }
     }
 
-    return g;
+    free(g);
+    return NULL;
 }
 
 void gzl_free_grammar(struct gzl_grammar *g)

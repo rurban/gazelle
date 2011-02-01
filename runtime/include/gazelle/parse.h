@@ -231,6 +231,7 @@ enum gzl_status {
   GZL_STATUS_CANCELLED,
   GZL_STATUS_HARD_EOF,
   GZL_STATUS_RESOURCE_LIMIT_EXCEEDED,
+  GZL_STATUS_BAD_GRAMMAR,
 
   /* The following errors are Only returned by clients using the parse_file
    * interface: */

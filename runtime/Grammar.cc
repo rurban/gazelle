@@ -48,5 +48,5 @@ bool Grammar::loadBitCodeStream(bc_read_stream *stream, bool closeStream) {
     bc_rs_close_stream(stream);
   // Note: the current implementation of gzl_load_grammar either succeeds or
   // calls exit() with a value of 1. Ugly but true.
-  return true;
+  return !!grammar_;
 }
