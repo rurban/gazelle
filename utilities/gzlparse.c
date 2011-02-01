@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
     if(dump_json) {
         bg.terminal_cb = terminal_callback;
         bg.did_start_rule_cb = start_rule_callback;
-        bg.end_rule_cb = end_rule_callback;
+        bg.will_end_rule_cb = end_rule_callback;
         fputs("{\"parse_tree\":", stdout);
     }
     gzl_init_parse_state(state, &bg);

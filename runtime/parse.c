@@ -142,8 +142,10 @@ struct gzl_parse_stack_frame *pop_frame(struct gzl_parse_state *s)
 static
 enum gzl_status pop_rtn_frame(struct gzl_parse_state *s)
 {
-    assert(DYNARRAY_GET_TOP(s->parse_stack)->frame_type == GZL_FRAME_TYPE_RTN);
-    if(s->bound_grammar->end_rule_cb) s->bound_grammar->end_rule_cb(s);
+    struct gzl_parse_stack_frame *end_frame = DYNARRAY_GET_TOP(s->parse_stack);
+    assert(end_frame->frame_type == GZL_FRAME_TYPE_RTN);
+    if(s->bound_grammar->will_end_rule_cb)
+      s->bound_grammar->will_end_rule_cb(s);
 
     struct gzl_parse_stack_frame *frame = pop_frame(s);
     if(frame) {
@@ -155,9 +157,14 @@ enum gzl_status pop_rtn_frame(struct gzl_parse_state *s)
           /* Should only happen at the top level. */
           assert(s->parse_stack_len == 1);
         }
+        if(s->bound_grammar->did_end_rule_cb)
+          s->bound_grammar->did_end_rule_cb(s, end_frame);
         return GZL_STATUS_OK;
-    } else
+    } else {
+        if(s->bound_grammar->did_end_rule_cb)
+          s->bound_grammar->did_end_rule_cb(s, end_frame);
         return GZL_STATUS_HARD_EOF;
+    }
 }
 
 static
@@ -355,7 +362,10 @@ enum gzl_status do_gla_transition(struct gzl_parse_state *s,
             struct gzl_terminal *next_term = &s->token_buffer[*rtn_term_offset];
             if(t->transition_type == GZL_TERMINAL_TRANSITION) {
                 /* The transition must match what we have in the token buffer */
-                assert(next_term->name == t->edge.terminal_name);
+                //assert(next_term->name == t->edge.terminal_name);
+                if (next_term->name != t->edge.terminal_name) {
+                  return GZL_STATUS_ERROR;
+                }
                 (*rtn_term_offset)++;
                 status = do_rtn_terminal_transition(s, t, next_term);
             } else
@@ -514,12 +524,14 @@ enum gzl_status do_intfa_transition(struct gzl_parse_state *s,
      * coming from is *not* final, it's just a parse error. */
     if(!t) {
         char *terminal = intfa_frame->intfa_state->final;
-        assert(terminal); /* TODO: handle this case. */
-        status = process_terminal(s, terminal, &frame->start_offset,
-                                  s->offset.byte - frame->start_offset.byte);
-        if(status != GZL_STATUS_OK) return status;
-        intfa_frame = push_intfa_frame_for_gla_or_rtn(s);
-        t = find_intfa_transition(intfa_frame->intfa_state, ch);
+        //assert(terminal); /* TODO: handle this case better. */
+        if (terminal) {
+            status = process_terminal(s, terminal, &frame->start_offset,
+                                      s->offset.byte -frame->start_offset.byte);
+            if(status != GZL_STATUS_OK) return status;
+            intfa_frame = push_intfa_frame_for_gla_or_rtn(s);
+            t = find_intfa_transition(intfa_frame->intfa_state, ch);
+        }
         if(!t) {
             /* Parse error: we encountered a character for which we have no
              * transition. */

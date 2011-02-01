@@ -86,7 +86,8 @@ class Parser {
                                gzl_offset *offset) {}
   virtual void onDidStartRule(gzl_rtn_frame *frame, const char *name) {}
 
-  virtual void onEndRule(gzl_rtn_frame *frame, const char *name) {}
+  virtual void onWillEndRule(gzl_rtn_frame *frame, const char *name) {}
+  virtual void onDidEndRule(gzl_rtn_frame *frame, const char *name) {}
 
   virtual void onTerminal(gzl_terminal *terminal) {}
 

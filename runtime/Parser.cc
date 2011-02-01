@@ -19,11 +19,18 @@ static void did_start_rule_callback(struct gzl_parse_state *state) {
   ((Parser*)state->user_data)->onDidStartRule(rtn_frame, rtn_frame->rtn->name);
 }
 
-static void end_rule_callback(struct gzl_parse_state *state) {
+static void will_end_rule_callback(struct gzl_parse_state *state) {
   gzl_parse_stack_frame *frame = DYNARRAY_GET_TOP(state->parse_stack);
   assert(frame->frame_type == gzl_parse_stack_frame::GZL_FRAME_TYPE_RTN);
   gzl_rtn_frame *rtn_frame = &frame->f.rtn_frame;
-  ((Parser*)state->user_data)->onEndRule(rtn_frame, rtn_frame->rtn->name);
+  ((Parser*)state->user_data)->onWillEndRule(rtn_frame, rtn_frame->rtn->name);
+}
+
+static void did_end_rule_callback(struct gzl_parse_state *state,
+                                  struct gzl_parse_stack_frame *frame) {
+  assert(frame->frame_type == gzl_parse_stack_frame::GZL_FRAME_TYPE_RTN);
+  gzl_rtn_frame *rtn_frame = &frame->f.rtn_frame;
+  ((Parser*)state->user_data)->onDidEndRule(rtn_frame, rtn_frame->rtn->name);
 }
 
 static void terminal_callback(struct gzl_parse_state *state,
@@ -50,7 +57,7 @@ Parser::~Parser() {
   if (state_)
     gzl_free_parse_state(state_);
 }
-  
+
 
 void Parser::setGrammar(Grammar *grammar) {
   state_ = gzl_alloc_parse_state();
@@ -60,7 +67,8 @@ void Parser::setGrammar(Grammar *grammar) {
   boundGrammar_.terminal_cb = terminal_callback;
   boundGrammar_.will_start_rule_cb = will_start_rule_callback;
   boundGrammar_.did_start_rule_cb = did_start_rule_callback;
-  boundGrammar_.end_rule_cb = end_rule_callback;
+  boundGrammar_.will_end_rule_cb = will_end_rule_callback;
+  boundGrammar_.did_end_rule_cb = did_end_rule_callback;
   boundGrammar_.error_char_cb = error_unknown_trans_callback;
   boundGrammar_.error_terminal_cb = error_terminal_callback;
   gzl_init_parse_state(state_, &boundGrammar_);
