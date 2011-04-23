@@ -60,6 +60,7 @@ Parser::~Parser() {
 
 
 void Parser::setGrammar(Grammar *grammar) {
+  grammar_ = grammar;
   state_ = gzl_alloc_parse_state();
   assert(state_ != NULL);
   state_->user_data = (void*)this;

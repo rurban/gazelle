@@ -30,6 +30,7 @@ class Parser {
 
   // Set the grammar which should be used for the next call to parse
   void setGrammar(Grammar *grammar);
+  Grammar *grammar() { return grammar_; }
 
   // A structure which contains the current state (see parse.h for details)
   inline gzl_parse_state *state() { return state_; }
@@ -101,6 +102,8 @@ class Parser {
 
   // The Gazelle parse state
   gzl_parse_state *state_;
+
+  Grammar *grammar_;  // weak
 };
 
 
