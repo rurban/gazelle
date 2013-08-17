@@ -9,8 +9,9 @@ IMGDIR := /usr/share/asciidoc/images
 CFLAGS += -std=c99
 CPPFLAGS := -Iruntime/include
 ifeq ($(shell uname), Darwin)
-  CPPFLAGS += -I/usr/include/lua5.1
-  LDFLAGS := -L/usr/local/lib -llua
+# CC = gcc-mp-4.8
+  CPPFLAGS += -I/opt/local/include
+  LDFLAGS := -L/opt/local/lib -llua
 else
   CFLAGS += $(strip $(shell pkg-config --silence-errors --cflags lua || pkg-config --cflags lua5.1))
   LDFLAGS := $(strip $(shell pkg-config --silence-errors --libs lua || pkg-config --libs lua5.1))
@@ -41,9 +42,9 @@ IMG := $(foreach img,$(wildcard $(IMGDIR)/*.png),docs/images/$(notdir $(img)))
 	$(CC) $(CFLAGS) $(CPPFLAGS) -MM -MT $(patsubst %.c,%.o,$<) -o $@ $^
 
 %.so: %.o
-	$(CC) $(LDFLAGS) -shared -o $@ $^
+	$(CC) $(LDFLAGS) -shared -o $@ $^ runtime/libgazelle.a
 
-all: $(UTIL) $(LIB) $(PROG)
+all: $(LIB) $(UTIL) $(PROG)
 
 ifneq ($(filter-out clean doc test,$(MAKECMDGOALS)),)
   -include $(DEP)
