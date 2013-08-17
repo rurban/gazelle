@@ -53,7 +53,11 @@ static void load(lua_State *L, const char *name)
  if (memcmp(t.sig,GLUESIG,GLUELEN)!=0) luaL_error(L,"no Lua program found in %s",name);
  if (fseek(f,t.size1,SEEK_SET)!=0) cannot("seek");
  S.f=f; S.size=t.size2;
+#if LUA_VERSION_NUM > 501
+ if (lua_load(L,myget,&S,name,NULL)!=0) lua_error(L);
+#else
  if (lua_load(L,myget,&S,name)!=0) lua_error(L);
+#endif
  fclose(f);
 }
 
@@ -102,13 +106,20 @@ int main(int argc, char *argv[])
  }
  argv[0]=name;
 #endif
- L=lua_open();
+ L=luaL_newstate();
  if (L==NULL)
  {
   report("not enough memory for state");
   return EXIT_FAILURE;
  }
+#if LUA_VERSION_NUM > 501
+ lua_pushcfunction(L, &pmain);
+ lua_pushinteger(L, argc);
+ lua_pushlightuserdata(L, argv);
+ if (lua_pcall(L,3,1,0)) report(lua_tostring(L,-1));
+#else
  if (lua_cpcall(L,pmain,argv)) report(lua_tostring(L,-1));
+#endif
  lua_close(L);
  return EXIT_SUCCESS;
 }
